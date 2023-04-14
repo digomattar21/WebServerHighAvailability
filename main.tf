@@ -340,31 +340,60 @@ resource "aws_cloudwatch_metric_alarm" "example" {
 }
 
 # Configure GuardDuty to monitor the AWS account
+# Create a GuardDuty detector
 # resource "aws_guardduty_detector" "example" {
 #   enable = true
-#   tags   = {
-#     Environment = "production"
+# }
+
+# resource "null_resource" "generate_ipset_file" {
+#   provisioner "local-exec" {
+#     command = <<EOT
+#       SECURITY_GROUP_ID="${aws_security_group.ec2.id}"
+#       OUTPUT_FILE="ipset-file.txt"
+
+#       aws ec2 describe-instances \
+#         --filters "Name=instance.group-id,Values=$SECURITY_GROUP_ID" \
+#         --query 'Reservations[*].Instances[*].PrivateIpAddress' \
+#         --output text | tr '\t' '\n' > "$OUTPUT_FILE"
+# EOT
 #   }
 # }
 
-# Configure GuardDuty to send findings to a SNS topic
-# data "aws_guardduty_detector" "example" {
-#   name_prefix = "rodry-guard-detector"
-# }
-# data "aws_guardduty_member" "example" {
-#   account_id = "746108472597"
+# resource "aws_s3_bucket" "asg_ips_bucket" {
+#   bucket = "rodry-bucket-guardduty-ips"
+#   acl    = "private"
 # }
 
-# data "aws_guardduty_sns_topic" "example" {
-#   name = "rodry-sns-topic"
+# resource "aws_s3_bucket_object" "asg_ips_file" {
+#   depends_on = [null_resource.generate_ipset_file]
+
+#   bucket = aws_s3_bucket.asg_ips_bucket.id
+#   key    = "rodry-asg-ips.txt"
+#   source = "ipset-file.txt"
+#   acl    = "private"
+# }
+
+# # Create a threat intelligence list with the IP addresses of your Auto Scaling group instances
+# resource "aws_guardduty_threatintelset" "asg_threatintelset" {
+#   name        = "asg-threatintelset"
+#   activate    = true
+#   format      = "TXT"
+#   location    = "s3://${aws_s3_bucket.asg_ips_bucket.bucket}/asg-ips.txt"
+#   detector_id = aws_guardduty_detector.example.id
+# }
+
+# # Create an IP match condition for the threat intelligence list
+# resource "aws_guardduty_ipset" "asg_ipmatchset" {
+#   name        = "asg-ipmatchset"
+#   format      = "TXT"
+#   activate    = true
+#   location    = aws_guardduty_threatintelset.asg_threatintelset.location
+#   detector_id = aws_guardduty_detector.example.id
 # }
 
 
-# resource "aws_sns_topic_subscription" "example" {
-#   topic_arn = data.aws_guardduty_sns_topic.example.arn
-#   protocol = "email"
-#   endpoint = "rodrigosm11@al.insper.edu.br"
-# }
+
+
 # Output the Elastic Load Balancer's DNS name
 output "elb_dns_name" {
   value = aws_lb.example.dns_name
