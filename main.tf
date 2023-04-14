@@ -244,12 +244,11 @@ resource "aws_security_group" "ec2" {
   vpc_id      = aws_vpc.rodry-vpc-tf.id
 
   ingress {
-    from_port = 80
-    to_port   = 80
-    protocol  = "tcp"
-    # security_groups = [aws_security_group.elb.id]
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow traffic from the load balancer"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.elb.id, aws_security_group.bastion_sg.id]
+    description     = "Allow traffic from the load balancer and bastion"
   }
 
   ingress {
@@ -339,7 +338,7 @@ resource "aws_cloudwatch_metric_alarm" "example" {
   namespace           = "AWS/EC2"
   period              = "120"
   statistic           = "Average"
-  threshold           = "90"
+  threshold           = "93"
   alarm_description   = "This metric monitors the CPU utilization of the EC2 instances."
   alarm_actions       = ["arn:aws:sns:us-east-2:746108472597:my-cloudwatch-sns-topic"]
   dimensions = {
