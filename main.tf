@@ -167,7 +167,7 @@ data "template_file" "user_data" {
 
 resource "aws_launch_template" "example" {
   name_prefix            = "rodry-lt-tf"
-  image_id               = data.aws_ami.latest.id
+  image_id               = data.aws_ami.ubuntu.id
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.ec2.id]
   key_name               = aws_key_pair.example.key_name
@@ -212,20 +212,35 @@ resource "aws_autoscaling_group" "example" {
 }
 
 
-data "aws_ami" "latest" {
+data "aws_ami" "ubuntu" {
   most_recent = true
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
   }
 
   filter {
-    name   = "owner-alias"
-    values = ["amazon"]
+    name   = "virtualization-type"
+    values = ["hvm"]
   }
 
-  owners = ["amazon"]
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "image-type"
+    values = ["machine"]
+  }
+
+  owners = ["099720109477"] # Canonical, the publisher of Ubuntu images
 }
 
 
