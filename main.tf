@@ -162,14 +162,7 @@ resource "aws_security_group" "elb" {
 
 # Create a launch template for the EC2 instances
 data "template_file" "user_data" {
-  template = <<-EOF
-              #!/bin/bash
-              yum update -y
-              yum install -y httpd
-              echo "Hello, World!" > /var/www/html/index.html
-              systemctl enable httpd
-              systemctl start httpd
-            EOF
+  template = file("./server_setup.sh")
 }
 
 resource "aws_launch_template" "example" {
