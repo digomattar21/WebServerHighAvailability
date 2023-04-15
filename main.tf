@@ -160,11 +160,6 @@ resource "aws_security_group" "elb" {
   }
 }
 
-# Create a launch template for the EC2 instances
-data "template_file" "user_data" {
-  template = file("./server_setup.sh")
-}
-
 resource "aws_launch_template" "example" {
   name_prefix            = "rodry-lt-tf"
   image_id               = data.aws_ami.ubuntu.id
@@ -172,7 +167,7 @@ resource "aws_launch_template" "example" {
   vpc_security_group_ids = [aws_security_group.ec2.id]
   key_name               = aws_key_pair.example.key_name
 
-  user_data = base64encode(data.template_file.user_data.rendered)
+  user_data = base64encode(file("server_setup.sh"))
 
   monitoring {
     enabled = true
@@ -288,13 +283,14 @@ resource "aws_lb_target_group" "example" {
   vpc_id      = aws_vpc.rodry-vpc-tf.id
 
   health_check {
-    path                = "/index.html"
-    port                = "traffic-port"
-    protocol            = "HTTP"
+    enabled             = true
     interval            = 30
-    timeout             = 10
+    path                = "/"
+    timeout             = 5
     healthy_threshold   = 3
     unhealthy_threshold = 3
+    protocol            = "HTTP"
+    matcher             = "200"
   }
 
 }
