@@ -4,14 +4,14 @@ sudo apt-get install -y curl
 sudo curl -fsSL https://deb.nodesource.com/setup_14.x | sudo bash -
 sudo apt-get install -y nodejs
 
-sudo npm install -g create-react-app
+sudo npm install -g yarn
 
-create-react-app my-react-app
+git clone https://github.com/digomattar21/portfolio.git
 
-cd my-react-app
+cd portfolio
 
-sudo npm install -g serve
+yarn
 
-npm run build
+yarn build
 
-sudo serve -s build -l 80
+sudo yarn start --port 80
