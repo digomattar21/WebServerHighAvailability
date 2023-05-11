@@ -334,6 +334,7 @@ resource "aws_lb_listener_rule" "example" {
 }
 
 # Configure CloudWatch to monitor the EC2 instances
+#Alarme de alta utilizacao do CPU
 resource "aws_cloudwatch_metric_alarm" "example" {
   alarm_name          = "rodry-cw-tf"
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -350,59 +351,125 @@ resource "aws_cloudwatch_metric_alarm" "example" {
   }
 }
 
-# Configure GuardDuty to monitor the AWS account
-# Create a GuardDuty detector
-# resource "aws_guardduty_detector" "example" {
-#   enable = true
-# }
+#Alarme de alto inbound traffic
+resource "aws_cloudwatch_metric_alarm" "network_inbound_alarm" {
+  alarm_name          = "rodry-cw-tf-network-inbound"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "NetworkIn"
+  namespace           = "AWS/EC2"
+  period              = "300"
+  statistic           = "Average"
+  threshold           = "1000000"
+  alarm_description   = "This metric monitors the inbound network traffic of the EC2 instances."
+  alarm_actions       = ["arn:aws:sns:us-east-2:746108472597:my-cloudwatch-sns-topic"]
+  dimensions = {
+    AutoScalingGroupName = "${aws_autoscaling_group.example.name}"
+  }
+}
 
-# resource "null_resource" "generate_ipset_file" {
-#   provisioner "local-exec" {
-#     command = <<EOT
-#       SECURITY_GROUP_ID="${aws_security_group.ec2.id}"
-#       OUTPUT_FILE="ipset-file.txt"
+#Alarme de alto outbound traffic
+resource "aws_cloudwatch_metric_alarm" "network_outbound_alarm" {
+  alarm_name          = "rodry-cw-tf-network-outbound"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "NetworkOut"
+  namespace           = "AWS/EC2"
+  period              = "300"
+  statistic           = "Average"
+  threshold           = "1000000"
+  alarm_description   = "This metric monitors the outbound network traffic of the EC2 instances."
+  alarm_actions       = ["arn:aws:sns:us-east-2:746108472597:my-cloudwatch-sns-topic"]
+  dimensions = {
+    AutoScalingGroupName = "${aws_autoscaling_group.example.name}"
+  }
+}
 
-#       aws ec2 describe-instances \
-#         --filters "Name=instance.group-id,Values=$SECURITY_GROUP_ID" \
-#         --query 'Reservations[*].Instances[*].PrivateIpAddress' \
-#         --output text | tr '\t' '\n' > "$OUTPUT_FILE"
-# EOT
-#   }
-# }
+#Alarme de alto disk space utilization
+resource "aws_cloudwatch_metric_alarm" "disk_space_utilization_alarm" {
+  alarm_name          = "rodry-cw-tf-disk-space-utilization"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "DiskSpaceUtilization"
+  namespace           = "System/Linux"
+  period              = "300"
+  statistic           = "Average"
+  threshold           = "90"
+  alarm_description   = "This metric monitors the disk space utilization of the EC2 instances."
+  alarm_actions       = ["arn:aws:sns:us-east-2:746108472597:my-cloudwatch-sns-topic"]
+  dimensions = {
+    AutoScalingGroupName = "${aws_autoscaling_group.example.name}"
+  }
+}
 
-# resource "aws_s3_bucket" "asg_ips_bucket" {
-#   bucket = "rodry-bucket-guardduty-ips"
-#   acl    = "private"
-# }
+#Alarme de alto memory utilization
+resource "aws_cloudwatch_metric_alarm" "memory_utilization_alarm" {
+  alarm_name          = "rodry-cw-tf-memory-utilization"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "MemoryUtilization"
+  namespace           = "System/Linux"
+  period              = "300"
+  statistic           = "Average"
+  threshold           = "90"
+  alarm_description   = "This metric monitors the memory utilization of the EC2 instances."
+  alarm_actions       = ["arn:aws:sns:us-east-2:746108472597:my-cloudwatch-sns-topic"]
+  dimensions = {
+    AutoScalingGroupName = "${aws_autoscaling_group.example.name}"
+  }
+}
 
-# resource "aws_s3_bucket_object" "asg_ips_file" {
-#   depends_on = [null_resource.generate_ipset_file]
-
-#   bucket = aws_s3_bucket.asg_ips_bucket.id
-#   key    = "rodry-asg-ips.txt"
-#   source = "ipset-file.txt"
-#   acl    = "private"
-# }
-
-# # Create a threat intelligence list with the IP addresses of your Auto Scaling group instances
-# resource "aws_guardduty_threatintelset" "asg_threatintelset" {
-#   name        = "asg-threatintelset"
-#   activate    = true
-#   format      = "TXT"
-#   location    = "s3://${aws_s3_bucket.asg_ips_bucket.bucket}/asg-ips.txt"
-#   detector_id = aws_guardduty_detector.example.id
-# }
-
-# # Create an IP match condition for the threat intelligence list
-# resource "aws_guardduty_ipset" "asg_ipmatchset" {
-#   name        = "asg-ipmatchset"
-#   format      = "TXT"
-#   activate    = true
-#   location    = aws_guardduty_threatintelset.asg_threatintelset.location
-#   detector_id = aws_guardduty_detector.example.id
-# }
+#Alarme de alto disk read/write operations
+resource "aws_cloudwatch_metric_alarm" "disk_rw_operations_alarm" {
+  alarm_name          = "rodry-cw-tf-disk-rw-operations"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "DiskReadOps"
+  namespace           = "AWS/EC2"
+  period              = "300"
+  statistic           = "Average"
+  threshold           = "100"
+  alarm_description   = "This metric monitors the disk read/write operations of the EC2 instances."
+  alarm_actions       = ["arn:aws:sns:us-east-2:746108472597:my-cloudwatch-sns-topic"]
+  dimensions = {
+    AutoScalingGroupName = "${aws_autoscaling_group.example.name}"
+  }
+}
 
 
+#Alarme de alto status check failed
+resource "aws_cloudwatch_metric_alarm" "status_check_failed_alarm" {
+  alarm_name          = "rodry-cw-tf-status-check-failed"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "StatusCheckFailed"
+  namespace           = "AWS/EC2"
+  period              = "60"
+  statistic           = "Sum"
+  threshold           = "1"
+  alarm_description   = "This metric monitors the number of status check failures of the EC2 instances."
+  alarm_actions       = ["arn:aws:sns:us-east-2:746108472597:my-cloudwatch-sns-topic"]
+  dimensions = {
+    AutoScalingGroupName = "${aws_autoscaling_group.example.name}"
+  }
+}
+
+#Alarme de low cpu credit balance
+resource "aws_cloudwatch_metric_alarm" "cpu_credit_balance_alarm" {
+  alarm_name          = "rodry-cw-tf-cpu-credit-balance"
+  comparison_operator = "LessThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "CPUCreditBalance"
+  namespace           = "AWS/EC2"
+  period              = "300"
+  statistic           = "Minimum"
+  threshold           = "10"
+  alarm_description   = "This metric monitors the CPU credit balance of the EC2 instances."
+  alarm_actions       = ["arn:aws:sns:us-east-2:746108472597:my-cloudwatch-sns-topic"]
+  dimensions = {
+    AutoScalingGroupName = "${aws_autoscaling_group.example.name}"
+  }
+}
 
 
 # Output the Elastic Load Balancer's DNS name
@@ -416,7 +483,6 @@ output "target_group_name" {
 
 
 # BASTION CONFIG
-
 # Create a security group for the bastion host
 resource "aws_security_group" "bastion_sg" {
   name_prefix = "bastion-sg-"
