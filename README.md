@@ -85,7 +85,7 @@ An Auto Scaling Group (ASG) is created which uses the Launch Template to launch 
 #### Security Group
 Security Groups act as a virtual firewall for your instance to control inbound and outbound traffic.
 
-#### ClouWatch Alarms Configuration
+#### CloudWatch Alarms Configuration
 CloudWatch alarms are set to monitor the CPU utilization, network traffic, disk space utilization, memory utilization, and disk read/write operations. They are set to notify a specific Amazon SNS topic if the alarm state changes. 
 
 Five different alarms are set up to monitor:
