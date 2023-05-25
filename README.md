@@ -62,17 +62,17 @@ An Elastic Load Balancer (ELB) is created and associated with the public subnets
 A Launch Template is created with the necessary details like the AMI ID, instance type, security group, and other details required for launching an instance. In this case i'm using a ubuntu image.
 The launch template "user_data" attribute receives a file which has a set of instructions to run the web server.
 In this case my file is at is follows:
- `#!/bin/bash`
-`sudo apt-get update`
-`sudo apt-get install -y curl`
-`sudo curl -fsSL https://deb.nodesource.com/setup_14.x | sudo bash -`
-`sudo apt-get install -y nodejs`
-`sudo npm install -g yarn`
-`git clone <YOUR REPO HERE>`
-`cd <YOUR REPO NAME>`
-`yarn`
-`yarn build`
-`sudo yarn start --port 80`
+ ```#!/bin/bash
+sudo apt-get update
+sudo apt-get install -y curl
+sudo curl -fsSL https://deb.nodesource.com/setup_14.x | sudo bash -
+sudo apt-get install -y nodejs
+sudo npm install -g yarn
+git clone <YOUR REPO HERE>
+cd <YOUR REPO NAME>
+yarn
+yarrn build
+sudo yarn start --port 80```
 
 This set of instructions install the necessary tools for my web server code to run and for the instance to serve the code in the desired port.
 Note: You may have to change this script according to your web server needs.
