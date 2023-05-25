@@ -77,7 +77,7 @@ sudo yarn start --port 80
 ```
 
 This set of instructions install the necessary tools for my web server code to run and for the instance to serve the code in the desired port.
-Note: You may have to change this script according to your web server needs.
+> Note: You may have to change this script according to your web server needs.
 
 #### Auto Scaling
 An Auto Scaling Group (ASG) is created which uses the Launch Template to launch instances. The ASG makes sure that a specified number of instances are always running.
