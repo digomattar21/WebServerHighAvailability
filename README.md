@@ -71,8 +71,8 @@ sudo npm install -g yarn
 git clone <YOUR REPO HERE>
 cd <YOUR REPO NAME>
 yarn
-yarrn build
-sudo yarn start --port 80```
+yarn build
+sudo yarn start --port 80 ```
 
 This set of instructions install the necessary tools for my web server code to run and for the instance to serve the code in the desired port.
 Note: You may have to change this script according to your web server needs.
