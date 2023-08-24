@@ -75,3 +75,55 @@ resource "aws_security_group" "bastion_sg" {
   }
 }
 
+resource "aws_security_group" "rds" {
+  name_prefix = "rodry_sec_redis"
+  description = "Security group for the RDS instances"
+  vpc_id      = aws_vpc.rodry-vpc-tf.id
+
+  ingress {
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.ec2.id]
+    description     = "Allow traffic from the ec2s to RDS"
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow all outbound traffic"
+  }
+
+  tags = {
+    Name = "target-group-sg"
+  }
+}
+
+resource "aws_security_group" "redis" {
+  name_prefix = "rodry_sec_redis"
+  description = "Security group for the Redis instances"
+  vpc_id      = aws_vpc.rodry-vpc-tf.id
+
+  ingress {
+    from_port       = 6379
+    to_port         = 6379
+    protocol        = "tcp"
+    security_groups = [aws_security_group.ec2.id]
+    description     = "Allow traffic from the ec2s to redis"
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow all outbound traffic"
+  }
+
+  tags = {
+    Name = "target-group-sg"
+  }
+}
+
