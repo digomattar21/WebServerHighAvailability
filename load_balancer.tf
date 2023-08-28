@@ -16,17 +16,17 @@ resource "aws_lb" "example" {
 
 resource "aws_lb_target_group" "example" {
   name_prefix = "rodry"
-  port        = 80
+  port        = 8080
   protocol    = "HTTP"
   vpc_id      = aws_vpc.rodry-vpc-tf.id
 
   health_check {
     enabled             = true
-    interval            = 30
-    path                = "/"
-    timeout             = 5
+    interval            = 120
+    path                = "/todos"
+    timeout             = 119
     healthy_threshold   = 3
-    unhealthy_threshold = 3
+    unhealthy_threshold = 10
     protocol            = "HTTP"
     matcher             = "200"
   }

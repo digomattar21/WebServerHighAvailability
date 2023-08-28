@@ -30,6 +30,22 @@ resource "aws_security_group" "ec2" {
   vpc_id      = aws_vpc.rodry-vpc-tf.id
 
   ingress {
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
+    security_groups = [aws_security_group.elb.id, aws_security_group.bastion_sg.id]
+    description     = "Allow traffic from the load balancer and bastion"
+  }
+
+  ingress {
+    from_port       = 9229
+    to_port         = 9229
+    protocol        = "tcp"
+    security_groups = [aws_security_group.elb.id, aws_security_group.bastion_sg.id]
+    description     = "Allow traffic from the load balancer and bastion"
+  }
+
+  ingress {
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
