@@ -8,14 +8,15 @@ resource "aws_instance" "bastion" {
   tags = {
     Name = "bastion"
   }
-
-  provisioner "local-exec" {
-    command = "aws ec2 associate-address --instance-id ${aws_instance.bastion.id} --public-ip ${aws_eip.bastion_eip.public_ip}"
-  }
 }
 
 resource "aws_eip" "bastion_eip" {
-  vpc = true
+  domain = "vpc"
+}
+
+resource "aws_eip_association" "bastion_eip_assoc" {
+  instance_id   = aws_instance.bastion.id
+  allocation_id = aws_eip.bastion_eip.id
 }
 
 resource "aws_security_group_rule" "allow_bastion_access" {
