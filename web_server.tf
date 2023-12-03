@@ -1,11 +1,10 @@
-resource "aws_launch_template" "example" {
-  name_prefix            = "rodry-lt-tf"
-  image_id               = data.aws_ami.ubuntu.id
-  instance_type          = "t2.micro"
+resource "aws_instance" "web_server" {
+  ami                    = "ami-0b61425d47a44fc5f"  
+  instance_type          = "t2.micro"               
+  key_name               = aws_key_pair.key.key_name  
   vpc_security_group_ids = [aws_security_group.ec2.id]
-  key_name               = aws_key_pair.example.key_name
+  subnet_id              = aws_subnet.private[0].id
 
-  # user_data = base64encode(file("server_setup.sh"))
   user_data = base64encode(<<-EOT
                             #!/bin/bash
 
@@ -24,17 +23,8 @@ resource "aws_launch_template" "example" {
                             EOT 
    )
 
-   iam_instance_profile {
-    name = aws_iam_instance_profile.ec2_secrets_manager_profile.name
-  }
-  monitoring {
-    enabled = true
-  }
-
-  block_device_mappings {
-    device_name = "/dev/xvda"
-    ebs {
-      volume_size = 8
-    }
+  tags = {
+    Name = "WebServer"
   }
 }
+

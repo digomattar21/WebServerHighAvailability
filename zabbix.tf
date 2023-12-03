@@ -2,7 +2,7 @@
 resource "aws_instance" "zabbix" {
   ami                    = "ami-0b61425d47a44fc5f"  # us-east-2 jammy amd64
   instance_type          = "t2.medium"
-  key_name               = aws_key_pair.example.key_name
+  key_name               = aws_key_pair.key.key_name
   vpc_security_group_ids = [aws_security_group.zabbix_sg.id]
   subnet_id              = aws_subnet.public_1.id
   user_data              = base64encode(file("zabbix.sh"))    
@@ -45,7 +45,7 @@ resource "aws_security_group_rule" "allow_ssh_from_bastion" {
   from_port                = 22
   to_port                  = 22
   protocol                 = "tcp"
-  source_security_group_id = aws_security_group.bastion_sg.id
+  source_security_group_id = aws_security_group.js_sg.id
   security_group_id        = aws_security_group.zabbix_sg.id
 }
 
