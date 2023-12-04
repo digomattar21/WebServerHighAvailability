@@ -7,7 +7,7 @@ The configuration code is given below along with instructions on how to use it.
 
 ## Overview of Infrastructure
 
-![infrastructure chart](./infra_chart.png)
+![infrastructure chart](./infra_chart.jpeg)
 
 Figure 1: This is a high-level architecture diagram showing how the services are deployed in AWS.
 
