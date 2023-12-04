@@ -1,4 +1,5 @@
 provider "aws" {
+  profile = "rodrigo_devops"
   region  = "us-east-2"
 }
 

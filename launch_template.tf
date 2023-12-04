@@ -18,6 +18,7 @@ resource "aws_launch_template" "example" {
                             git clone https://github.com/coderonfleek/simple-node-api.git
                             cd simple-node-api
                             npm install
+                            export PORT=8080
                             node server
 
                             EOT 

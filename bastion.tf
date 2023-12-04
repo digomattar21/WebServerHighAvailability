@@ -1,9 +1,11 @@
 resource "aws_instance" "bastion" {
-  ami                    = "ami-0c55b159cbfafe1f0"
+  ami                    = "ami-0b61425d47a44fc5f"
   instance_type          = "t2.micro"
   key_name               = aws_key_pair.bastion_key.key_name
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
   subnet_id              = aws_subnet.public_1.id
+
+  user_data              = base64encode(file("bastion.sh"))  
 
   tags = {
     Name = "bastion"
